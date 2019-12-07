@@ -149,6 +149,15 @@ function Matrix(y,x){
 		return t;
 	}
 
+	this.trace = function(){//->int
+		var tr = 0;
+		var c = Math.min(this.dimX,this.dimY);
+		for(var i=0;i<c;i++){
+			tr+=this.getElement(i,i);
+		}
+		return tr;
+	}
+
 
 	for(var i=0;i<y;i++){//init
 		this.val[i] = new Array();
@@ -158,7 +167,6 @@ function Matrix(y,x){
 	}
 }
 /*TODO
-trace
 determinants
 inverses
 cofactor?
