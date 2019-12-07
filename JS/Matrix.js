@@ -90,7 +90,7 @@ function Matrix(x,y){
 		return this.val[y][x];
 	}
 
-	this.mAdd = function(m){
+	this.mAdd = function(m){//Matrix->Matrix
 		if(typeof(m)!="object"){
 			console.warn("Warning: the matrix you want to add is not a matrix");
 		}else if(!m.isMatrix(this.dimX,this.dimY)){
@@ -104,6 +104,16 @@ function Matrix(x,y){
 			}
 			return sum;
 		}
+	}
+
+	this.cMultiply = function(c){//int->Matrix
+		var cm = new Matrix(this.dimX,this.dimY);
+		for(var i=0;i<this.dimY;i++){
+			for(var j=0;j<this.dimX;j++){
+				cm.altElement(j,i,(this.getElement(j,i)*c));
+			}
+		}
+		return cm;
 	}
 
 
@@ -129,5 +139,4 @@ cofactor?
 var m = new Matrix(2,2);
 m.altRow(0,[1,2]);
 m.altRow(1,[3,4]);
-var n = "";
-var nm = m.mAdd(n);
+var n = m.cMultiply(2);
