@@ -139,6 +139,16 @@ function Matrix(y,x){
 		return m.leftMultiply(this);
 	}
 
+	this.transpose = function(){//->Matrix
+		var t = new Matrix(this.dimX,this.dimY)
+		for(var i=0;i<this.dimY;i++){
+			for(var j=0;j<this.dimX;j++){
+				t.altElement(j,i,this.getElement(i,j));
+			}
+		}
+		return t;
+	}
+
 
 	for(var i=0;i<y;i++){//init
 		this.val[i] = new Array();
@@ -148,7 +158,6 @@ function Matrix(y,x){
 	}
 }
 /*TODO
-transposes
 trace
 determinants
 inverses
