@@ -116,6 +116,29 @@ function Matrix(x,y){
 		return cm;
 	}
 
+	this.leftMultiply = function(m){//Matrix->Matrix//The owner matrix is on the right, the guest matrix on the left.
+		if(m.dimX!=this.dimY || typeof(m)!="object" || !m.isMatrix()){
+			console.warn("Warning: These matrices cannot be multiplied");
+		}else{
+			var mn = new Matrix(this.dimX,m.dimY);
+			for(var n=0;n<m.dimY;n++){
+				for(var p=0;p<this.dimX;p++){
+					var j=0;
+					for(var i=0;i<this.dimY;i++){
+						j+=(m.getElement(i,n)*this.getElement(p,i));
+					}
+					mn.altElement(p,n,j);
+				}
+			}
+
+		}
+		return mn;
+	}
+
+	this.rightMultiply = function(m){
+		return m.leftMultiply(this);
+	}
+
 
 	for(var i=0;i<y;i++){
 		this.val[i] = new Array();
@@ -125,7 +148,6 @@ function Matrix(x,y){
 	}
 }
 /*TODO
-scalar multiplication
 matrix multiplication (left/right)
 transposes
 trace
@@ -140,3 +162,4 @@ var m = new Matrix(2,2);
 m.altRow(0,[1,2]);
 m.altRow(1,[3,4]);
 var n = m.cMultiply(2);
+var mn = n.leftMultiply(m);
