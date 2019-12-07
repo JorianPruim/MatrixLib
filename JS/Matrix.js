@@ -1,9 +1,9 @@
-function Matrix(x,y){
+function Matrix(y,x){
 	this.dimX = x;//int (columns)
 	this.dimY = y;//int (rows)
 	this.val = new Array();//array(array(),array(),ect.)
 
-	this.isMatrix = function(x,y){//int,int->bool
+	this.isMatrix = function(y,x){//int,int->bool
 		if(typeof(this)!="object"){
 			return false;
 		}else if(this.val.length != y){
@@ -19,7 +19,7 @@ function Matrix(x,y){
 		}
 	}
 
-	this.addColumns = function(n){//->void
+	this.addColumns = function(n){//int->void
 		for(var i=0;i<this.dimY;i++){
 			for(var j=0;j<n;j++){
 				this.val[i][this.dimX+j]=0;
@@ -28,7 +28,7 @@ function Matrix(x,y){
 		this.dimX += n;
 	}
 
-	this.addRows = function(n){//->void
+	this.addRows = function(n){//int->void
 		for(var i=0;i<n;i++){
 			this.val[this.dimY+i] = new Array();
 			for(var j=0;j<this.dimX;j++){
@@ -60,7 +60,7 @@ function Matrix(x,y){
 		}
 	}
 
-	this.altElement = function(x,y,n){//int,int,int->void
+	this.altElement = function(y,x,n){//int,int,int->void
 		this.val[y][x] = n;
 	}
 
@@ -86,7 +86,7 @@ function Matrix(x,y){
 		return col;
 	}
 
-	this.getElement = function(x,y){
+	this.getElement = function(y,x){//int,int->int
 		return this.val[y][x];
 	}
 
@@ -99,7 +99,7 @@ function Matrix(x,y){
 			var sum = new Matrix(this.dimX,this.dimY);
 			for(var i=0;i<this.dimX;i++){
 				for(var j=0;j<this.dimY;j++){
-					sum.altElement(i,j,(this.getElement(i,j)+m.getElement(i,j)));
+					sum.altElement(j,i,(this.getElement(j,i)+m.getElement(j,i)));
 				}
 			}
 			return sum;
@@ -110,24 +110,24 @@ function Matrix(x,y){
 		var cm = new Matrix(this.dimX,this.dimY);
 		for(var i=0;i<this.dimY;i++){
 			for(var j=0;j<this.dimX;j++){
-				cm.altElement(j,i,(this.getElement(j,i)*c));
+				cm.altElement(i,j,(this.getElement(i,j)*c));
 			}
 		}
 		return cm;
 	}
 
 	this.leftMultiply = function(m){//Matrix->Matrix//The owner matrix is on the right, the guest matrix on the left.
-		if(m.dimX!=this.dimY || typeof(m)!="object" || !m.isMatrix()){
+		if(m.dimX!=this.dimY || typeof(m)!="object"){
 			console.warn("Warning: These matrices cannot be multiplied");
 		}else{
-			var mn = new Matrix(this.dimX,m.dimY);
+			var mn = new Matrix(m.dimY,this.dimX);
 			for(var n=0;n<m.dimY;n++){
 				for(var p=0;p<this.dimX;p++){
 					var j=0;
 					for(var i=0;i<this.dimY;i++){
-						j+=(m.getElement(i,n)*this.getElement(p,i));
+						j+=(m.getElement(n,i)*this.getElement(i,p));
 					}
-					mn.altElement(p,n,j);
+					mn.altElement(n,p,j);
 				}
 			}
 
@@ -135,20 +135,19 @@ function Matrix(x,y){
 		return mn;
 	}
 
-	this.rightMultiply = function(m){
+	this.rightMultiply = function(m){//Matrix->Matrix//The owner matrix is on the left, the guest matrix on the right.
 		return m.leftMultiply(this);
 	}
 
 
-	for(var i=0;i<y;i++){
+	for(var i=0;i<y;i++){//init
 		this.val[i] = new Array();
 		for(var j=0;j<x;j++){
 			this.val[i][j] = 0;
-		}//init
+		}
 	}
 }
 /*TODO
-matrix multiplication (left/right)
 transposes
 trace
 determinants
@@ -158,8 +157,13 @@ cofactor?
 
 
 
-var m = new Matrix(2,2);
-m.altRow(0,[1,2]);
-m.altRow(1,[3,4]);
-var n = m.cMultiply(2);
+var m = new Matrix(2,3);
+m.altRow(0,[1,2,3]);
+m.altRow(1,[4,5,6]);
+var n = new Matrix(3,2);
+n.altRow(0,[2,3]);
+n.altRow(1,[3,4]);
+n.altRow(2,[4,5]);
+
 var mn = n.leftMultiply(m);
+var nm = n.rightMultiply(m);
