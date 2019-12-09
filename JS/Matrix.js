@@ -19,6 +19,16 @@ function Matrix(y,x){
 		}
 	}
 
+	this.clone = function(){//WIP: new matrix points to same storage as parent matrix
+		var t = new Matrix(this.dimY,this.dimX);
+		t.val = this.getVal();
+		return t;
+	}
+
+	this.getVal = function(){//WIP
+		return this.val;
+	}
+
 	this.addColumns = function(n){//int->void
 		for(var i=0;i<this.dimY;i++){
 			for(var j=0;j<n;j++){
@@ -66,12 +76,14 @@ function Matrix(y,x){
 
 	this.dropRow = function(y){//int->void
 		this.val.splice(y,1);
+		this.dimY--;
 	}
 
 	this.dropColumn = function(x){//int->void
 		for(row of this.val){
 			row.splice(x,1);
 		}
+		this.dimX--;
 	}
 
 	this.getRow = function(y){//int->array
@@ -158,6 +170,37 @@ function Matrix(y,x){
 		return tr;
 	}
 
+	this.cofactor = function(i){//WIP: side effect from the det() drama
+		var c = this.clone();
+		c.dropRow(0);
+		c.dropColumn(i);
+		return c;
+	}
+
+	this.det = function(){//WIP: keeps changing parent matrix DO NOT USE
+		if(this.dimY!=this.dimX){
+			console.error("Cannot give a determinant of a non-square matrix");
+		}else if(this.dimY == 2){
+			return ((this.getElement(0,0)*this.getElement(1,1))-(this.getElement(1,0)*this.getElement(0,1)));
+		}else{
+			var d = 0;
+			var minor = undefined;
+			for(var i=0;i<this.dimY;i++){
+				minor = this.cofactor(i); //set to this.cofactor
+				
+				if(i%2==0){
+					d+=(minor.det()*this.getElement(0,i));
+					
+				}else{
+					d-=(minor.det()*this.getElement(0,i));
+					
+				}
+			}
+			return d;
+
+		}
+	}
+
 
 	for(var i=0;i<y;i++){//init
 		this.val[i] = new Array();
@@ -166,21 +209,20 @@ function Matrix(y,x){
 		}
 	}
 }
+
+
+
 /*TODO
 determinants
 inverses
 cofactor?
 */
+//open question: where does "this" refer to?
+var n = new Matrix(2,2);//debug dummy
+n.altRow(0,[1,2]);
+n.altRow(1,[3,4]);
 
-
-
-var m = new Matrix(2,3);
+var m = new Matrix(3,3);//debug dummy
 m.altRow(0,[1,2,3]);
 m.altRow(1,[4,5,6]);
-var n = new Matrix(3,2);
-n.altRow(0,[2,3]);
-n.altRow(1,[3,4]);
-n.altRow(2,[4,5]);
-
-var mn = n.leftMultiply(m);
-var nm = n.rightMultiply(m);
+m.altRow(2,[7,8,9]);
