@@ -21,12 +21,12 @@ function Matrix(y,x){
 
 	this.clone = function(){//WIP: new matrix points to same storage as parent matrix
 		var t = new Matrix(this.dimY,this.dimX);
-		t.val = this.getVal();
+		for(var i = 0; i<this.dimX; i++){
+			for(var j = 0; j<this.dimY; j++){
+				t.altElement(i,j,this.getElement(i,j));
+			}
+		}
 		return t;
-	}
-
-	this.getVal = function(){//WIP
-		return this.val;
 	}
 
 	this.addColumns = function(n){//int->void
@@ -170,14 +170,14 @@ function Matrix(y,x){
 		return tr;
 	}
 
-	this.cofactor = function(i){//WIP: side effect from the det() drama
+	this.cofactor = function(i){
 		var c = this.clone();
 		c.dropRow(0);
 		c.dropColumn(i);
 		return c;
 	}
 
-	this.det = function(){//WIP: keeps changing parent matrix DO NOT USE
+	this.det = function(){
 		if(this.dimY!=this.dimX){
 			console.error("Cannot give a determinant of a non-square matrix");
 		}else if(this.dimY == 2){
@@ -186,7 +186,7 @@ function Matrix(y,x){
 			var d = 0;
 			var minor = undefined;
 			for(var i=0;i<this.dimY;i++){
-				minor = this.cofactor(i); //set to this.cofactor
+				minor = this.cofactor(i); 
 				
 				if(i%2==0){
 					d+=(minor.det()*this.getElement(0,i));
@@ -215,14 +215,16 @@ function Matrix(y,x){
 /*TODO
 determinants
 inverses
-cofactor?
+diagonalizations?
 */
+
 //open question: where does "this" refer to?
+
 var n = new Matrix(2,2);//debug dummy
 n.altRow(0,[1,2]);
 n.altRow(1,[3,4]);
 
 var m = new Matrix(3,3);//debug dummy
 m.altRow(0,[1,2,3]);
-m.altRow(1,[4,5,6]);
-m.altRow(2,[7,8,9]);
+m.altRow(1,[4,8,6]);
+m.altRow(2,[7,-2,9]);
