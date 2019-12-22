@@ -2,6 +2,7 @@ function Matrix(y,x){
 	this.dimX = x;//int (columns)
 	this.dimY = y;//int (rows)
 	this.val = new Array();//array(array(),array(),ect.)
+	
 
 	this.isMatrix = function(y,x){//int,int->bool
 		if(typeof(this)!="object"){
@@ -70,7 +71,10 @@ function Matrix(y,x){
 		}
 	}
 
-	this.altElement = function(y,x,n){//int,int,int->void
+	this.altElement = function(y,x,n){//int,int,number->void
+		if(this.beautify){
+			n = n;
+		}
 		this.val[y][x] = n;
 	}
 
@@ -98,7 +102,7 @@ function Matrix(y,x){
 		return col;
 	}
 
-	this.getElement = function(y,x){//int,int->int
+	this.getElement = function(y,x){//int,int->number
 		return this.val[y][x];
 	}
 
@@ -118,7 +122,7 @@ function Matrix(y,x){
 		}
 	}
 
-	this.cMultiply = function(c){//int->Matrix
+	this.cMultiply = function(c){//number->Matrix
 		var cm = new Matrix(this.dimX,this.dimY);
 		for(var i=0;i<this.dimY;i++){
 			for(var j=0;j<this.dimX;j++){
@@ -139,6 +143,7 @@ function Matrix(y,x){
 					for(var i=0;i<this.dimY;i++){
 						j+=(m.getElement(n,i)*this.getElement(i,p));
 					}
+
 					mn.altElement(n,p,j);
 				}
 			}
@@ -161,7 +166,7 @@ function Matrix(y,x){
 		return t;
 	}
 
-	this.trace = function(){//->int
+	this.trace = function(){//->number
 		var tr = 0;
 		var c = Math.min(this.dimX,this.dimY);
 		for(var i=0;i<c;i++){
@@ -170,23 +175,31 @@ function Matrix(y,x){
 		return tr;
 	}
 
-	this.cofactor = function(i){
+	this.minor = function(i){//int->Matrix
 		var c = this.clone();
 		c.dropRow(0);
 		c.dropColumn(i);
 		return c;
 	}
 
-	this.det = function(){
+	this.trueminor = function(posy,posx){//int,int->Matrix
+		var c = this.clone();
+		c.dropRow(posy);
+		c.dropColumn(posx);
+		return c;
+	}
+
+	this.det = function(){//->number
 		if(this.dimY!=this.dimX){
 			console.error("Cannot give a determinant of a non-square matrix");
+			return false;
 		}else if(this.dimY == 2){
 			return ((this.getElement(0,0)*this.getElement(1,1))-(this.getElement(1,0)*this.getElement(0,1)));
 		}else{
 			var d = 0;
 			var minor = undefined;
 			for(var i=0;i<this.dimY;i++){
-				minor = this.cofactor(i); 
+				minor = this.minor(i); 
 				
 				if(i%2==0){
 					d+=(minor.det()*this.getElement(0,i));
@@ -201,6 +214,36 @@ function Matrix(y,x){
 		}
 	}
 
+	this.inverse = function(){//->Matrix
+		if(this.dimX!=this.dimY){
+			console.error("Cannot return an inverse matrix of a non-square matrix");
+			return false;
+		}else if(this.det()==0){
+			console.warn("Cannot return inverse, matrix is singular");
+			return false;
+		}else{
+			var inv = new Matrix(this.dimX,this.dimY);
+			for(var i=0;i<this.dimY;i++){
+				for(var j=0;j<this.dimX;j++){
+					
+					var c = this.trueminor(j,i);
+					
+					if((j+i)%2==0){
+						c = c.det();
+					}else{
+						c = c.det()*-1;
+					}
+						;
+					c /= this.det();
+					
+					inv.altElement(i,j,c);
+				}
+			}
+		}
+		return inv;//this.leftMultiply(inv).val -> [I]
+	}
+
+
 
 	for(var i=0;i<y;i++){//init
 		this.val[i] = new Array();
@@ -213,18 +256,23 @@ function Matrix(y,x){
 
 
 /*TODO
-determinants
-inverses
 diagonalizations?
 */
 
-//open question: where does "this" refer to?
 
-var n = new Matrix(2,2);//debug dummy
+var n = new Matrix(2,2);//debug dummies
 n.altRow(0,[1,2]);
 n.altRow(1,[3,4]);
 
-var m = new Matrix(3,3);//debug dummy
+var m = new Matrix(3,3);
 m.altRow(0,[1,2,3]);
 m.altRow(1,[4,8,6]);
 m.altRow(2,[7,-2,9]);
+
+var q = new Matrix(4,4);
+q.altRow(0,[2,-1,4,5]);
+q.altRow(1,[-1,0,0,3]);
+q.altRow(2,[4,3,5,-3]);
+q.altRow(3,[2,2,-3,0]);
+
+//open question: where does "this" refer to?
