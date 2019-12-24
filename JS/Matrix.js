@@ -1,8 +1,28 @@
 function Matrix(y,x){
 	this.dimX = x;//int (columns)
 	this.dimY = y;//int (rows)
-	this.val = new Array();//array(array(),array(),ect.)
+	this.val = new Array();//2-dim array
 	
+	this.construct = function(value){//2-dim array->bool
+		var succes = true;
+		if(value.length!=this.dimY){//layer 1: check for dimY
+			console.error("cannot construct matrix, unexpected amount of rows recieved (expected " + this.dimY + " rows, recieved " + value.length + ")");
+			succes = false;
+		}else{
+			for(var i=0;i<this.dimY;i++){
+				if(value[i].length!=this.dimX){//layer 2: check for dimX
+					console.error("cannot construct matrix, unexpected length of row (expected " + this.dimX + " elements, recieved " + value[i].length + ")");
+					succes = false;
+				}
+			}
+		}
+		if(succes){
+			this.val = value;
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 	this.isMatrix = function(y,x){//int,int->bool
 		if(typeof(this)!="object"){
@@ -175,14 +195,9 @@ function Matrix(y,x){
 		return tr;
 	}
 
-	this.minor = function(i){//int->Matrix
-		var c = this.clone();
-		c.dropRow(0);
-		c.dropColumn(i);
-		return c;
-	}
+	
 
-	this.trueminor = function(posy,posx){//int,int->Matrix
+	this.minor = function(posy,posx){//int,int->Matrix
 		var c = this.clone();
 		c.dropRow(posy);
 		c.dropColumn(posx);
@@ -199,7 +214,7 @@ function Matrix(y,x){
 			var d = 0;
 			var minor = undefined;
 			for(var i=0;i<this.dimY;i++){
-				minor = this.minor(i); 
+				minor = this.minor(0,i); 
 				
 				if(i%2==0){
 					d+=(minor.det()*this.getElement(0,i));
@@ -221,12 +236,18 @@ function Matrix(y,x){
 		}else if(this.det()==0){
 			console.warn("Cannot return inverse, matrix is singular");
 			return false;
+		}else if(this.dimX==2){
+			var inv = new Matrix(2,2);
+			inv.altElement(0,0,(this.getElement(1,1)/this.det()));
+			inv.altElement(0,1,(this.getElement(0,1)/this.det()*-1));
+			inv.altElement(1,0,(this.getElement(1,0)/this.det()*-1));
+			inv.altElement(1,1,(this.getElement(0,0)/this.det()));
 		}else{
 			var inv = new Matrix(this.dimX,this.dimY);
 			for(var i=0;i<this.dimY;i++){
 				for(var j=0;j<this.dimX;j++){
 					
-					var c = this.trueminor(j,i);
+					var c = this.minor(j,i);
 					
 					if((j+i)%2==0){
 						c = c.det();
@@ -252,27 +273,24 @@ function Matrix(y,x){
 		}
 	}
 }
+function identity(dim){//int->Matrix
+	var I = new Matrix(dim,dim);
+	for(var i=0;i<dim;i++){
+		I.altElement(i,i,1);
+	}
+}
+
 
 
 
 /*TODO
-diagonalizations?
+construct function
+identity construct
 */
 
 
-var n = new Matrix(2,2);//debug dummies
-n.altRow(0,[1,2]);
-n.altRow(1,[3,4]);
-
 var m = new Matrix(3,3);
-m.altRow(0,[1,2,3]);
-m.altRow(1,[4,8,6]);
-m.altRow(2,[7,-2,9]);
+m.construct(["xxx","xxx","xxx"]);
 
-var q = new Matrix(4,4);
-q.altRow(0,[2,-1,4,5]);
-q.altRow(1,[-1,0,0,3]);
-q.altRow(2,[4,3,5,-3]);
-q.altRow(3,[2,2,-3,0]);
 
 //open question: where does "this" refer to?
