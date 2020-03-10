@@ -16,6 +16,14 @@ function Matrix(y,x){
 				}
 			}
 		}
+		for(var p in value){
+			for(var q in value[p]){
+				if(typeof(value[p][q])!="number"){
+					console.error("encountered a non number element while attempting to construct a matrix at element " + q + "," + p);
+					succes = false;
+				}
+			}
+		}
 		if(succes){
 			this.val = value;
 			return true;
@@ -273,10 +281,10 @@ function Matrix(y,x){
 		}
 	}
 }
-function identity(dim){//int->Matrix
-	var I = new Matrix(dim,dim);
-	for(var i=0;i<dim;i++){
-		I.altElement(i,i,1);
+function Identity(dim){//int->Matrix
+	Matrix.call(this,dim,dim);
+	for(var i = 0;i<dim;i++){
+		this.altElement(i,i,1);
 	}
 }
 
@@ -284,13 +292,16 @@ function identity(dim){//int->Matrix
 
 
 /*TODO
-construct function
-identity construct
+eigenvalues
+eigenvectors
+stuff
 */
-
+var n = new Matrix(2,2)
+n.construct([[1,2],[3,4]]);
 
 var m = new Matrix(3,3);
-m.construct(["xxx","xxx","xxx"]);
+m.construct([[1,2,3],[2,3,4],[3,4,5]]);
 
+var q = new Identity(3);
 
 //open question: where does "this" refer to?
