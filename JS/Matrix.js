@@ -48,7 +48,7 @@ function Matrix(y,x){
 		}
 	}
 
-	this.clone = function(){//WIP: new matrix points to same storage as parent matrix
+	this.clone = function(){//->Matrix
 		var t = new Matrix(this.dimY,this.dimX);
 		for(var i = 0; i<this.dimX; i++){
 			for(var j = 0; j<this.dimY; j++){
@@ -77,7 +77,7 @@ function Matrix(y,x){
 		this.dimY+=n;
 	}
 
-	this.altRow = function(y,arr){//int,array->void
+	this.altRow = function(y,arr){//int,array->void TODO: number check
 		if(typeof(arr)!="object" || arr.length!=this.dimX){
 			console.warn("Warning: faulty array recieved, expected array of length " + this.dimX);
 		}else if(y>this.dimY || y<0){
@@ -94,16 +94,22 @@ function Matrix(y,x){
 			console.warn("Warning: column does not exist");
 		}else{
 			for(var i=0;i<this.dimY;i++){
-				this.val[i][x] = arr[i];
+				if(typeof arr[i] == "number"){
+					this.val[i][x] = arr[i];
+				}else{
+					console.warn("Warning: one element to be inserted is not a number");
+					this.val[i][x] = 0;
+				}
 			}
 		}
 	}
 
 	this.altElement = function(y,x,n){//int,int,number->void
-		if(this.beautify){
-			n = n;
+		if(typeof n == "number"){
+			this.val[y][x] = n;
+		}else{
+			console.warn("Warning: the element to be inserted is not a number");
 		}
-		this.val[y][x] = n;
 	}
 
 	this.dropRow = function(y){//int->void
